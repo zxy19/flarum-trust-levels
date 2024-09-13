@@ -1,0 +1,40 @@
+xypp-trust-levels:
+  # For more details on the format
+  # Checkout https://docs.flarum.org/extend/i18n/#appendix-a-standard-key-format
+  admin:
+    admin:
+    settings: "Settings"
+    data: "Data"
+    table:
+      id: "#"
+      name: "Name"
+      level: "Level"
+      group: "Group"
+      operation: "Operate"
+      remove_confirm: "Are you sure to remove?"
+      create: "Create"
+      save-level: "Save Sorting"
+    create-modal:
+      title: "Create Level"
+      edit: "Edit Level"
+      name: "Name"
+      group: "Group"
+      icon: "Icon"
+      hidden: "Hidden"
+      condition: "Condition"
+      button: "Create"
+      button-edit: "Edit"
+      new_item: "New Item"
+      null_group: "None"
+      copy-data: "Copy Data"
+      copy-name: "Copy Names"
+  forum:
+    page:
+      title: "Trust Level"
+      current-level: "Current Level"
+      next-level: "Next Level"
+      condition: "Condition"
+      required: "Required"
+      your: "Your"
+      no-info: "No Information"
+    nav-title: "Trust Levels"
