@@ -25,10 +25,10 @@ class CreateTrustLevel extends AbstractCreateController
 
         $attributes = Arr::get($request->getParsedBody(), 'data.attributes', []);
 
-        $trustLevel = TrustLevel::create($attributes);
-        if ($trustLevel->group_id === -1) {
-            $trustLevel->group_id = null;
+        if (Arr::get($attributes, "group_id") == -1) {
+            Arr::set($attributes, "group_id", null);
         }
+        $trustLevel = TrustLevel::create($attributes);
         $level = TrustLevel::max('level');
         if ($level === null)
             $level = 0;

@@ -44,7 +44,7 @@ export default class editModal extends Modal<{
             this.groups[group.id() + ""] = group.nameSingular();
         });
 
-        app.store.all<TrustLevel>("trustLevels").forEach(level => {
+        app.store.all<TrustLevel>("trust-levels").forEach(level => {
             if (level.level() > this.referenceLevelId) {
                 if (!this.attrs.item || this.level > level.level()) {
                     this.referenceLevelId = level.level();
@@ -88,7 +88,7 @@ export default class editModal extends Modal<{
                     <div className="Form-group">
                         <label>{app.translator.trans('xypp-trust-levels.admin.create-modal.condition')}</label>
                         <div>
-                            <Select options={this.loadedLevels} onchange={((r: number) => {
+                            <Select options={this.loadedLevels} value={this.referenceLevelId} onchange={((r: number) => {
                                 this.referenceLevelId = r;
                             }).bind(this)}></Select>
                             <Button className="Button Button--primary" onclick={this.copyData.bind(this)}>
@@ -149,12 +149,14 @@ export default class editModal extends Modal<{
 
         targetModel.condition().forEach(item => {
             const l = data.find(i => i.name == item.name);
-            if (l && override) {
-                l.calculate = item.calculate;
-                l.value = item.value;
-                l.operator = item.operator;
-                l.span = item.span;
-                l.alter_name = item.alter_name;
+            if (l) {
+                if (override) {
+                    l.calculate = item.calculate;
+                    l.value = item.value;
+                    l.operator = item.operator;
+                    l.span = item.span;
+                    l.alter_name = item.alter_name;
+                }
             }
             else {
                 data.push(item);

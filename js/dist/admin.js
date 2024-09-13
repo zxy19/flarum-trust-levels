@@ -325,7 +325,7 @@ var editModal = /*#__PURE__*/function (_Modal) {
     flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().store.all("groups").forEach(function (group) {
       _this2.groups[group.id() + ""] = group.nameSingular();
     });
-    flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().store.all("trustLevels").forEach(function (level) {
+    flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().store.all("trust-levels").forEach(function (level) {
       if (level.level() > _this2.referenceLevelId) {
         if (!_this2.attrs.item || _this2.level > level.level()) {
           _this2.referenceLevelId = level.level();
@@ -388,6 +388,7 @@ var editModal = /*#__PURE__*/function (_Modal) {
       className: "Form-group"
     }, m("label", null, flarum_admin_app__WEBPACK_IMPORTED_MODULE_4___default().translator.trans('xypp-trust-levels.admin.create-modal.condition')), m("div", null, m((flarum_common_components_Select__WEBPACK_IMPORTED_MODULE_6___default()), {
       options: this.loadedLevels,
+      value: this.referenceLevelId,
       onchange: function (r) {
         _this3.referenceLevelId = r;
       }.bind(this)
@@ -470,12 +471,14 @@ var editModal = /*#__PURE__*/function (_Modal) {
       var l = data.find(function (i) {
         return i.name == item.name;
       });
-      if (l && override) {
-        l.calculate = item.calculate;
-        l.value = item.value;
-        l.operator = item.operator;
-        l.span = item.span;
-        l.alter_name = item.alter_name;
+      if (l) {
+        if (override) {
+          l.calculate = item.calculate;
+          l.value = item.value;
+          l.operator = item.operator;
+          l.span = item.span;
+          l.alter_name = item.alter_name;
+        }
       } else {
         data.push(item);
       }
