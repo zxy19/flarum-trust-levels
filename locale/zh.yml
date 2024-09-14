@@ -1,0 +1,45 @@
+xypp-trust-levels:
+  admin:
+    admin:
+    settings: "Settings"
+    data: "Data"
+    table:
+      id: "#"
+      name: "Name"
+      level: "Level"
+      group: "Group"
+      operation: "Operate"
+      remove_confirm: "Are you sure to remove?"
+      create: "Create"
+      save-level: "Save Sorting"
+    create-modal:
+      title: "Create Level"
+      edit: "Edit Level"
+      name: "Name"
+      group: "Group"
+      icon: "Icon"
+      condition: "Condition"
+      button: "Create"
+      button-edit: "Edit"
+      new_item: "New Item"
+      null_group: "None"
+      copy-data: "Copy Data"
+      copy-name: "Copy Names"
+  forum:
+    page:
+      title: "Trust Level"
+      current-level: "Current Level"
+      next-level: "Next Level"
+      condition: "Condition"
+      required: "Required"
+      your: "Your"
+      no-info: "No Information"
+      no-condition: "No Condition Required"
+    nav-title: "Trust Levels"
+    notification:
+      level: "You have entered a new level!"
+      level-up: "You have leveled up to level #{level}: {name}!"
+      level-down: "You have leveled down to level #{level}: {name}!"
+      level-set-excerpt: "New level #{level}: {name}"
+      level-change-excerpt: "From level #{fromLevel}: {from} to level #{level}: {name}"
+      name: "Trust Level"

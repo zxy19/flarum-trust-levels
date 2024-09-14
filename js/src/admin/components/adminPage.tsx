@@ -163,7 +163,7 @@ export default class adminPage extends ExtensionPage {
         }).bind(this);
     }
 
-    submitSort() {
+    async submitSort() {
         this.savingSorting = true;
         m.redraw();
         const swapRecord: Record<number, number> = {};
@@ -172,13 +172,19 @@ export default class adminPage extends ExtensionPage {
                 swapRecord[parseInt(item.id() || "")] = item.level();
             }
         });
-        return app.request({
-            method: "POST",
-            url: app.forum.attribute("apiUrl") + "/trust-levels/sort",
-            body: { sorts: swapRecord }
-        }).finally(() => {
+        try {
+            await app.request({
+                method: "POST",
+                url: app.forum.attribute("apiUrl") + "/trust-levels/sort",
+                body: { sorts: swapRecord }
+            });
+            this.sortChanged = false;
+            this.items.forEach(item => {
+                item.pushAttributes({ "levelChanged": false });
+            });
+        } finally {
             this.savingSorting = false;
             m.redraw();
-        });
+        }
     }
 }
