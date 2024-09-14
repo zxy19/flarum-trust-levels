@@ -6,6 +6,8 @@ import UserPage from 'flarum/forum/components/UserPage';
 import { extend } from 'flarum/common/extend';
 import LinkButton from 'flarum/common/components/LinkButton';
 import { levelPage } from './components/levelPage';
+import levelChangeNotification from './notification/levelChangeNotification';
+import NotificationGrid from 'flarum/forum/components/NotificationGrid';
 
 app.initializers.add('xypp/flarum-trust-levels', () => {
   User.prototype.trustLevel = Model.hasOne<TrustLevel>('trustLevel') as any;
@@ -31,4 +33,13 @@ app.initializers.add('xypp/flarum-trust-levels', () => {
       );
     }
   });
+  extend(NotificationGrid.prototype, 'notificationTypes', function (items) {
+    items.add('trust_level_change', {
+      name: 'trust_level_change',
+      icon: 'fas fa-layer-group',
+      label: app.translator.trans('xypp-trust-levels.forum.notification.name')
+    });
+  });
+
+  app.notificationComponents.trust_level_change = levelChangeNotification;
 });

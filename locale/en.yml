@@ -37,4 +37,12 @@ xypp-trust-levels:
       required: "Required"
       your: "Your"
       no-info: "No Information"
+      no-condition: "No Condition Required"
     nav-title: "Trust Levels"
+    notification:
+      level: "You have entered a new level!"
+      level-up: "You have leveled up to level #{level}: {name}!"
+      level-down: "You have leveled down to level #{level}: {name}!"
+      level-set-excerpt: "New level #{level}: {name}"
+      level-change-excerpt: "From level #{fromLevel}: {from} to level #{level}: {name}"
+      name: "Trust Level"

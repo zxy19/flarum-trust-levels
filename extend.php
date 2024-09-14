@@ -26,6 +26,7 @@ use Xypp\TrustLevels\Api\Serializer\TrustLevelSerializer;
 use Xypp\TrustLevels\Console\UpdateLevel;
 use Xypp\TrustLevels\Listener\DataChange;
 use Xypp\TrustLevels\Listener\DayChange;
+use Xypp\TrustLevels\Notification\TrustLevelChangeNotification;
 
 return [
     (new Extend\Frontend('forum'))
@@ -52,4 +53,6 @@ return [
         ->listen(DateChangeCommand::class, DayChange::class),
     (new Extend\Console)
         ->command(UpdateLevel::class),
+    (new Extend\Notification)
+        ->type(TrustLevelChangeNotification::class, TrustLevelSerializer::class, ['alert'])
 ];

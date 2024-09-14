@@ -22,7 +22,7 @@ type levelTable = {
     names: string[],
     conditions: ConditionData[],
     level?: TrustLevel,
-    user: number[],
+    user: (number | false)[],
     target: number[],
     achieved: boolean[]
 }
@@ -65,10 +65,15 @@ export class levelPage extends UserPage {
         });
         const humanize = HumanizeUtils.getInstance(app);
         await humanize.loadDefinition();
-        const conditionMap = await getConditionMap();
 
+        let conditionMap: Record<string, Condition>;
+        try {
+            conditionMap = await getConditionMap(false, this.user);
+        } catch (ignore) {
+            conditionMap = {}
+        }
         const currentLevel = newUser.trustLevel();
-        const nextLevel = currentLevel?.next();
+        const nextLevel = currentLevel && currentLevel?.next();
 
         [
             [currentLevel, this.current, app.translator.trans('xypp-trust-levels.forum.page.current-level')],
@@ -87,8 +92,8 @@ export class levelPage extends UserPage {
                     const value = this.getValue(condition, conditionData);
                     data.user.push(value);
                     data.target.push(condition.value);
-                    data.achieved.push(this.conditionOp(value, condition.operator, condition.value));
-                    data.names.push(humanize.humanizeCondition(Object.assign(condition, { value: "", operator: "" })));
+                    data.achieved.push(value !== false && this.conditionOp(value, condition.operator, condition.value));
+                    data.names.push(humanize.humanizeCondition(Object.assign(condition, { value: "" })));
                 });
             }
         });
@@ -128,25 +133,33 @@ export class levelPage extends UserPage {
                 {showIf(!!table.level?.icon(), <i className={table.level?.icon()} ></i>)}
                 <span className={'level-name level-name-' + table.key}>{table.level?.name()}</span>
             </div>
-            <table className={'Table Level-table-' + table.key}>
-                <thead>
-                    <tr>
-                        <th>{app.translator.trans('xypp-trust-levels.forum.page.condition')}</th>
-                        <th>{app.translator.trans('xypp-trust-levels.forum.page.required')}</th>
-                        <th>{app.translator.trans('xypp-trust-levels.forum.page.your')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {table.names.map((name, idx) => <tr data-idx={idx} className={"condition-row " + showIf(table.achieved[idx], "achieved")}>
-                        <td className="col-condition">{name}</td>
-                        <td className="col-required">{table.target[idx]}</td>
-                        <td className="col-your">{table.user[idx]}</td>
-                    </tr>)}
-                </tbody>
-            </table>
+            {showIf(!!table.level.condition().length,
+                <table className={'Table Level-table-' + table.key}>
+                    <thead>
+                        <tr>
+                            <th>{app.translator.trans('xypp-trust-levels.forum.page.condition')}</th>
+                            <th>{app.translator.trans('xypp-trust-levels.forum.page.required')}</th>
+                            <th>{app.translator.trans('xypp-trust-levels.forum.page.your')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {table.names.map((name, idx) => <tr data-idx={idx} className={"condition-row " + showIf(table.achieved[idx], "achieved")}>
+                            <td className="col-condition">{name}</td>
+                            <td className="col-required">{table.target[idx]}</td>
+                            <td className="col-your">{showIf(
+                                table.user[idx] === false,
+                                "-",
+                                table.user[idx]
+                            )}</td>
+                        </tr>)}
+                    </tbody>
+                </table>,
+                <Placeholder text={app.translator.trans('xypp-trust-levels.forum.page.no-condition')}></Placeholder>
+            )}
         </div>;
     }
-    getValue(condition: ConditionData, data: Condition) {
+    getValue(condition: ConditionData, data?: Condition) {
+        if (!data) return false;
         if (condition.span) {
             return data.getSpan(condition.span, condition.calculate);
         } else {
