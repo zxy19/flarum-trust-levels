@@ -11,7 +11,7 @@ import Placeholder from 'flarum/common/components/Placeholder';
 import humanTime from 'flarum/common/helpers/humanTime';
 import Alert from 'flarum/common/components/Alert';
 import Switch from 'flarum/common/components/Switch'
-import { Condition, getConditionMap, getConditions, HumanizeUtils, OPERATOR } from '@xypp-collector/forum';
+import { Condition, getConditionMap, getConditions, HumanizeUtils, OPERATOR, userValueUtil } from '@xypp-collector/forum';
 import type { ConditionData } from '@xypp-collector/common/types/data';
 import TrustLevel from '../../common/models/TrustLevel';
 import { showIf } from '../../common/utils/NodeUtil';
@@ -29,6 +29,7 @@ type levelTable = {
 
 export class levelPage extends UserPage {
     loading: boolean = false;
+    valueUtils?: userValueUtil;
     current: levelTable = {
         key: 'current',
         title: '',
@@ -72,6 +73,7 @@ export class levelPage extends UserPage {
         } catch (ignore) {
             conditionMap = {}
         }
+        this.valueUtils = new userValueUtil(humanize, conditionMap);
         const currentLevel = newUser.trustLevel();
         const nextLevel = currentLevel && currentLevel?.next();
 
@@ -86,10 +88,8 @@ export class levelPage extends UserPage {
 
             if (level) {
                 level.condition().forEach(condition => {
-                    const conditionData = conditionMap[condition.name];
-
                     data.conditions.push(condition);
-                    const value = this.getValue(condition, conditionData);
+                    const value = this.valueUtils.getValue(condition);
                     data.user.push(value);
                     data.target.push(condition.value);
                     data.achieved.push(value !== false && this.conditionOp(value, condition.operator, condition.value));
@@ -157,14 +157,6 @@ export class levelPage extends UserPage {
                 <Placeholder text={app.translator.trans('xypp-trust-levels.forum.page.no-condition')}></Placeholder>
             )}
         </div>;
-    }
-    getValue(condition: ConditionData, data?: Condition) {
-        if (!data) return false;
-        if (condition.span) {
-            return data.getSpan(condition.span, condition.calculate);
-        } else {
-            return data.getTotal(condition.calculate);
-        }
     }
 
 
