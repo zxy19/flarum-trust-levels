@@ -2,15 +2,20 @@
 
 namespace Xypp\TrustLevels\Listener;
 use Flarum\User\User;
+use Xypp\Collector\Event\DailyUpdate;
+use Xypp\Collector\Helper\CommandContextHelper;
 use Xypp\LocalizeDate\Event\DateChangeEvent;
 use Xypp\TrustLevels\Utils\TrustLevelUtils;
 
 class DayChange
 {
-    public function __invoke(DateChangeEvent $event)
+    protected CommandContextHelper $helper;
+    public function __construct(CommandContextHelper $helper)
     {
-        User::all()->each(function (User $actor) {
-            TrustLevelUtils::checkLevel($actor);
-        });
+        $this->helper = $helper;
+    }
+    public function __invoke(DailyUpdate $event)
+    {
+        $this->helper->withProgressBar(User::all(),fn (User $actor) => TrustLevelUtils::checkLevel($actor));
     }
 }

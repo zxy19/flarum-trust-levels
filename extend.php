@@ -16,6 +16,7 @@ use Flarum\Api\Serializer\UserSerializer;
 use Flarum\Extend;
 use Flarum\User\User;
 use Xypp\Collector\Event\ConditionChange;
+use Xypp\Collector\Event\DailyUpdate;
 use Xypp\LocalizeDate\Console\DateChangeCommand;
 use Xypp\TrustLevels\Api\Controller\CreateTrustLevel;
 use Xypp\TrustLevels\Api\Controller\DeleteTrustLevel;
@@ -24,7 +25,6 @@ use Xypp\TrustLevels\Api\Controller\ListTrustLevel;
 use Xypp\TrustLevels\Api\Controller\SortTrustLevel;
 use Xypp\TrustLevels\Api\Serializer\TrustLevelSerializer;
 use Xypp\TrustLevels\Console\UpdateLevel;
-use Xypp\TrustLevels\Listener\DataChange;
 use Xypp\TrustLevels\Listener\DayChange;
 use Xypp\TrustLevels\Notification\TrustLevelChangeNotification;
 
@@ -49,10 +49,12 @@ return [
         ->patch("/trust-levels/{id}", "trust-levels.edit", EditTrustLevel::class)
         ->delete("/trust-levels/{id}", "trust-levels.delete", DeleteTrustLevel::class),
     (new Extend\Event)
-        ->listen(ConditionChange::class, DataChange::class)
-        ->listen(DateChangeCommand::class, DayChange::class),
+        ->listen(ConditionChange::class, \Xypp\TrustLevels\Listener\ConditionChange::class)
+        ->listen(DailyUpdate::class, DayChange::class),
     (new Extend\Console)
         ->command(UpdateLevel::class),
     (new Extend\Notification)
-        ->type(TrustLevelChangeNotification::class, TrustLevelSerializer::class, ['alert'])
+        ->type(TrustLevelChangeNotification::class, TrustLevelSerializer::class, ['alert']),
+    (new Extend\Settings)
+        ->default("xypp-trust-levels.no-auto-update",false)
 ];
