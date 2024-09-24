@@ -16,6 +16,8 @@ class DayChange
     }
     public function __invoke(DailyUpdate $event)
     {
-        $this->helper->withProgressBar(User::all(),fn (User $actor) => TrustLevelUtils::checkLevel($actor));
+        User::all()->each(function (User $actor) {
+            TrustLevelUtils::checkLevel($actor);
+        });
     }
 }
