@@ -29,6 +29,7 @@ export default class adminPage extends ExtensionPage {
                 setting: `xypp-trust-levels.no-auto-update`,
                 label: app.translator.trans("xypp-trust-levels.admin.no-auto-update"),
             })}
+            {this.submitButton()}
             <h2>{app.translator.trans('xypp-trust-levels.admin.data')}</h2>
             <table className="xypp-trust-levels-adminPage-table Table">
                 <thead>
