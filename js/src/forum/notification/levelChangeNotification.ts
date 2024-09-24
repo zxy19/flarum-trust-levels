@@ -2,6 +2,7 @@ import Notification from 'flarum/forum/components/Notification';
 import username from 'flarum/common/helpers/username';
 import app from 'flarum/forum/app';
 import TrustLevel from '../../common/models/TrustLevel';
+import User from 'flarum/common/models/User';
 
 export default class levelChangeNotification extends Notification {
     excerpt() {
@@ -34,7 +35,9 @@ export default class levelChangeNotification extends Notification {
     }
 
     href() {
-        return app.route("user.trust-level");
+        return app.route("user.trust-level",{
+            username: (this.attrs.notification.fromUser() as User).slug(),
+        });
     }
 
     content() {
