@@ -32,7 +32,7 @@ class CreateTrustLevel extends AbstractCreateController
         if (TrustLevel::count() === 0)
             $level = 0;
         else
-            $level = TrustLevel::max('level');
+            $level = TrustLevel::max('level') + 1;
         
         $trustLevel->level = $level;
         $trustLevel->save();
