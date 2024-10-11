@@ -157,9 +157,6 @@ export default class adminPage extends ExtensionPage {
             const level1 = tmp.level();
             const level2 = this.items[swap2].level();
 
-            this.items[swap1] = this.items[swap2];
-            this.items[swap2] = tmp;
-
             this.items[swap1].pushAttributes({ level: level2, levelChanged: true });
             this.items[swap2].pushAttributes({ level: level1, levelChanged: true });
             this.sortChanged = true;

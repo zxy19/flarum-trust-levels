@@ -148,7 +148,7 @@ export default class editModal extends Modal<{
         if (!targetModel) return;
 
         targetModel.condition().forEach(item => {
-            const l = data.find(i => i.name == item.name);
+            const l = data.find(i => (i.name == item.name && i.operator == item.operator && i.span == item.span));
             if (l) {
                 if (override) {
                     l.calculate = item.calculate;
