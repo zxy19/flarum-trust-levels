@@ -29,12 +29,12 @@ xypp-trust-levels:
   forum:
     page:
       title: "Trust Level"
-      current-level: "Current Level"
-      next-level: "Next Level"
+      current-level: "Current ({name})"
+      next-level: "Next ({name})"
+      none: "None"
       condition: "Condition"
       required: "Required"
       your: "Your"
-      no-info: "No Information"
       no-condition: "No Condition Required"
     nav-title: "Trust Levels"
     notification:

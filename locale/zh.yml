@@ -29,12 +29,12 @@ xypp-trust-levels:
   forum:
     page:
       title: "信任等级"
-      current-level: "当前等级"
-      next-level: "下一等级"
+      current-level: "当前等级({name})"
+      next-level: "下一等级({name})"
+      none: "无"
       condition: "条件"
       required: "需要"
       your: "你的"
-      no-info: "没有数据"
       no-condition: "没有需要达成的条件"
     nav-title: "信任等级"
     notification:

@@ -54,7 +54,7 @@ export default class editModal extends Modal<{
         });
     }
     className() {
-        return 'Modal Modal--large';
+        return 'Modal level-modal';
     }
     title() {
         if (this.attrs.item) {

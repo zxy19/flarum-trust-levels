@@ -20,9 +20,7 @@ type levelTable = {
     key: string,
     title: string,
     names: string[],
-    conditions: ConditionData[],
     level?: TrustLevel,
-    user: (number | false)[],
     target: number[],
     achieved: boolean[]
 }
@@ -30,12 +28,13 @@ type levelTable = {
 export class levelPage extends UserPage {
     loading: boolean = false;
     valueUtils?: userValueUtil;
+    fields: ConditionData[] = [];
+    fieldText: string[] = [];
+    fieldValue: number[] = [];
     current: levelTable = {
         key: 'current',
         title: '',
         names: [],
-        conditions: [],
-        user: [],
         target: [],
         achieved: []
     }
@@ -43,8 +42,6 @@ export class levelPage extends UserPage {
         key: 'next',
         title: '',
         names: [],
-        conditions: [],
-        user: [],
         target: [],
         achieved: []
     }
@@ -77,24 +74,52 @@ export class levelPage extends UserPage {
         const currentLevel = newUser.trustLevel();
         const nextLevel = currentLevel && currentLevel?.next();
 
+        [currentLevel, nextLevel].forEach(level => {
+            if (level) {
+                level.condition().forEach(condition => {
+                    if (this.fields.findIndex(c =>
+                        c.name === condition.name &&
+                        c.alter_name === condition.alter_name &&
+                        c.calculate === condition.calculate &&
+                        c.span === condition.span) != -1) {
+                        return;
+                    }
+                    const c = Object.assign({}, condition, { value: "" });
+                    const value = this.valueUtils!.getValue(condition);
+
+                    this.fields.push(c);
+                    this.fieldText.push(humanize.humanizeCondition(c));
+                    this.fieldValue.push(value);
+                });
+            }
+        });
+
         [
-            [currentLevel, this.current, app.translator.trans('xypp-trust-levels.forum.page.current-level')],
-            [nextLevel, this.next, app.translator.trans('xypp-trust-levels.forum.page.next-level')]
+            [currentLevel, this.current, 'xypp-trust-levels.forum.page.current-level'],
+            [nextLevel, this.next, 'xypp-trust-levels.forum.page.next-level']
         ].forEach((c: any) => {
             const level: TrustLevel | undefined = c[0];
             const data: levelTable = c[1];
             data.level = level;
-            data.title = c[2];
 
             if (level) {
                 level.condition().forEach(condition => {
-                    data.conditions.push(condition);
-                    const value = this.valueUtils.getValue(condition);
-                    data.user.push(value);
-                    data.target.push(condition.value);
-                    data.achieved.push(value !== false && this.conditionOp(value, condition.operator, condition.value));
-                    data.names.push(humanize.humanizeCondition(Object.assign(condition, { value: "" })));
+                    const id = this.fields.findIndex(c =>
+                        c.name === condition.name &&
+                        c.alter_name === condition.alter_name &&
+                        c.calculate === condition.calculate &&
+                        c.span === condition.span);
+                    const value = this.fieldValue[id];
+                    data.target[id] = condition.value;
+                    data.achieved[id] = this.conditionOp(value, condition.operator, condition.value);
                 });
+                data.title = (app.translator.trans(c[2], {
+                    name: level.name()
+                }) as string[]).join("");
+            } else {
+                data.title = (app.translator.trans(c[2], {
+                    name: app.translator.trans('xypp-trust-levels.forum.page.none')
+                }) as string[]).join("");
             }
         });
 
@@ -109,56 +134,46 @@ export class levelPage extends UserPage {
             <h2>
                 {app.translator.trans('xypp-trust-levels.forum.page.title')}
             </h2>
-            {[this.current, this.next].map(this.makeTable)}
+            {this.makeTable()}
         </div>;
     }
-
-    makeTable(table: levelTable) {
-        if (!table.level) {
-            return <div className="TrustLevelPage-table">
-                <div className="TrustLevelPage-table-header">
-                    <h3>{table.title}</h3>
-                </div>
-                <div className="TrustLevelPage-table-level">
-                    <i class="fas fa-border-none"></i>&nbsp;
-                    <span className={'level-name level-name-' + table.key}>{app.translator.trans('xypp-trust-levels.forum.page.no-info')}</span>
-                </div>
-            </div>
-        }
+    makeTable() {
         return <div className="TrustLevelPage-table">
-            <div className="TrustLevelPage-table-header">
-                <h3>{table.title}</h3>
-            </div>
-            <div className="TrustLevelPage-table-level">
-                {showIf(!!table.level?.icon(), <i className={table.level?.icon()} ></i>)}
-                <span className={'level-name level-name-' + table.key}>{table.level?.name()}</span>
-            </div>
-            {showIf(!!table.level.condition().length,
-                <table className={'Table Level-table-' + table.key}>
-                    <thead>
+            <table className={'Table Level-table'}>
+                <thead>
+                    <tr>
+                        <th>{app.translator.trans('xypp-trust-levels.forum.page.condition')}</th>
+                        <th>{this.current.title}</th>
+                        <th>{app.translator.trans('xypp-trust-levels.forum.page.your')}</th>
+                        <th>{this.next.title}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {showIf(this.fields.length == 0,
                         <tr>
-                            <th>{app.translator.trans('xypp-trust-levels.forum.page.condition')}</th>
-                            <th>{app.translator.trans('xypp-trust-levels.forum.page.required')}</th>
-                            <th>{app.translator.trans('xypp-trust-levels.forum.page.your')}</th>
+                            <td colspan="4">
+                                <Placeholder text={app.translator.trans('xypp-trust-levels.forum.page.no-condition')} />
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {table.names.map((name, idx) => <tr data-idx={idx} className={"condition-row " + showIf(table.achieved[idx], "achieved")}>
-                            <td className="col-condition">{name}</td>
-                            <td className="col-required">{table.target[idx]}</td>
-                            <td className="col-your">{showIf(
-                                table.user[idx] === false,
-                                "-",
-                                table.user[idx]
-                            )}</td>
-                        </tr>)}
-                    </tbody>
-                </table>,
-                <Placeholder text={app.translator.trans('xypp-trust-levels.forum.page.no-condition')}></Placeholder>
-            )}
+                        ,
+                        this.fields.map((_, index) => this.makeRow(index))
+                    )}
+                </tbody>
+            </table>
         </div>;
     }
-
+    makeRow(index: number) {
+        return <tr>
+            <td>{this.fieldText[index]}</td>
+            <td className={"level-condition level-condition-current " + (this.current.achieved[index] ? 'achieve' : '')}>
+                {this.current.target[index]}
+            </td>
+            <td className='level-value'>{this.fieldValue[index]}</td>
+            <td className={"level-condition level-condition-next " + (this.next.achieved[index] ? 'achieve' : '')}>
+                {this.next.target[index]}
+            </td>
+        </tr>;
+    }
 
     conditionOp(value1: number, op: OPERATOR, value2: number) {
         switch (op) {
