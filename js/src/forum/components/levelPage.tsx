@@ -11,8 +11,8 @@ import Placeholder from 'flarum/common/components/Placeholder';
 import humanTime from 'flarum/common/helpers/humanTime';
 import Alert from 'flarum/common/components/Alert';
 import Switch from 'flarum/common/components/Switch'
-import { Condition, getConditionMap, getConditions, HumanizeUtils, OPERATOR, userValueUtil } from '@xypp-collector/forum';
-import type { ConditionData } from '@xypp-collector/common/types/data';
+import { Condition, getConditionMap, getConditions, HumanizeUtils, OPERATOR, userValueUtil, CALCULATE } from '@xypp-collector/forum';
+import { type ConditionData } from '@xypp-collector/common/types/data';
 import TrustLevel from '../../common/models/TrustLevel';
 import { showIf } from '../../common/utils/NodeUtil';
 
@@ -80,7 +80,7 @@ export class levelPage extends UserPage {
                     if (this.fields.findIndex(c =>
                         c.name === condition.name &&
                         c.alter_name === condition.alter_name &&
-                        c.calculate === condition.calculate &&
+                        (c.calculate || CALCULATE.SUM) === (condition.calculate || CALCULATE.SUM) &&
                         c.span === condition.span) != -1) {
                         return;
                     }
@@ -107,7 +107,7 @@ export class levelPage extends UserPage {
                     const id = this.fields.findIndex(c =>
                         c.name === condition.name &&
                         c.alter_name === condition.alter_name &&
-                        c.calculate === condition.calculate &&
+                        (c.calculate || CALCULATE.SUM) === (condition.calculate || CALCULATE.SUM) &&
                         c.span === condition.span);
                     const value = this.fieldValue[id];
                     data.target[id] = condition.value;
