@@ -29,7 +29,7 @@ class CreateTrustLevel extends AbstractCreateController
             Arr::set($attributes, "group_id", null);
         }
         $trustLevel = TrustLevel::create($attributes);
-        if (TrustLevel::count() === 0)
+        if (!TrustLevel::exists())
             $level = 0;
         else
             $level = TrustLevel::max('level') + 1;
