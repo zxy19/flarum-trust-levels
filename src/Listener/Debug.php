@@ -42,7 +42,7 @@ class Debug
 
         $currentTime = $this->conditionHelper->cz->now();
 
-        TrustLevelConditionUtils::eachConditions($$currentLevel->conditions, function ($name, $operator, $value, $calculate, $span) use ($conditions, $command, $currentTime) {
+        TrustLevelConditionUtils::eachConditions($currentLevel->conditions, function ($name, $operator, $value, $calculate, $span) use ($conditions, $command, $currentTime) {
             $command->info(" # Checking $name ($span  c->$calculate)");
             $currentCondition = $conditions->where("name", $name)->first();
             if (!$currentCondition) {
