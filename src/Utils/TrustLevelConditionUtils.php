@@ -66,11 +66,7 @@ class TrustLevelConditionUtils
         $result = true;
         self::eachConditions($conditions, function ($name, $operator, $value, $calculate, $span) use ($condition, $conditionHelper, &$result) {
             $currentCondition = $condition->where("name", $name)->first();
-            if ($currentCondition) {
-                $result = $result && $conditionHelper->checkCondition($name, $operator, $value, $span, $calculate, $currentCondition);
-            } else {
-                $result = false;
-            }
+            $result = $result && $conditionHelper->checkCondition($name, $operator, $value, $span, $calculate, $currentCondition);
         });
         return $result;
     }

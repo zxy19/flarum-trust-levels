@@ -45,23 +45,23 @@ class Debug
         TrustLevelConditionUtils::eachConditions($currentLevel->conditions, function ($name, $operator, $value, $calculate, $span) use ($conditions, $command, $currentTime) {
             $command->info(" # Checking $name ($span  c->$calculate)");
             $currentCondition = $conditions->where("name", $name)->first();
+            $conditionDefine = $this->conditionHelper->getConditionDefinition($name);
+            $currentValue = 0;
+
             if (!$currentCondition) {
-                $command->info(" - Condition $name not found");
-            } else {
-                $conditionDefine = $this->conditionHelper->getConditionDefinition($name);
-                $currentValue = 0;
-                if ($span)
-                    $currentValue = $currentCondition->getAccumulation()->getSpan($currentTime, $span, intval($calculate));
-                else {
-                    $currentValue = $currentCondition->getAccumulation()->getTotal($calculate);
-                }
-                $command->info(" - $name $currentValue ( Req $operator $value )");
-                if ($conditionDefine->compare($currentValue, $operator, $value)) {
-                    $command->info(" - + passed");
-                } else {
-                    $command->warn(" - - failed");
-                }
+                $command->info(" - ? Condition $name not found");
+            } else if ($span)
+                $currentValue = $currentCondition->getAccumulation()->getSpan($currentTime, $span, intval($calculate));
+            else {
+                $currentValue = $currentCondition->getAccumulation()->getTotal($calculate);
             }
+            $command->info(" - $name $currentValue ( Req $operator $value )");
+            if ($conditionDefine->compare($currentValue, $operator, $value)) {
+                $command->info(" - + passed");
+            } else {
+                $command->warn(" - - failed");
+            }
+
         });
     }
 }
